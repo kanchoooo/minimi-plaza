@@ -1,6 +1,6 @@
 {
   "name": "minimi-plaza",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "description": "미니미 광장 — 나만의 미니미로 친구들과 모이는 P2P 광장 + 불꽃놀이",
   "main": "./out/main/index.js",
