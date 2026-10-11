@@ -1,0 +1,458 @@
+/* Galmuri (SIL OFL 1.1, assets/fonts/ofl.md) */
+@font-face {
+  font-family: Galmuri11;
+  font-weight: 400;
+  font-display: block;
+  src: url('./assets/fonts/Galmuri11.woff2') format('woff2');
+}
+@font-face {
+  font-family: Galmuri11;
+  font-weight: 700;
+  font-display: block;
+  src: url('./assets/fonts/Galmuri11-Bold.woff2') format('woff2');
+}
+@font-face {
+  font-family: Galmuri14;
+  font-weight: 400;
+  font-display: block;
+  src: url('./assets/fonts/Galmuri14.woff2') format('woff2');
+}
+@font-face {
+  font-family: Galmuri9;
+  font-weight: 400;
+  font-display: block;
+  src: url('./assets/fonts/Galmuri9.woff2') format('woff2');
+}
+
+/* ───────── 디자인 토큰 ─────────
+   미니홈피 감성: 하늘색 배경 + 흰 패널 + 점선 + 주황 포인트. (오리지널 디자인) */
+:root {
+  --bg: #dfeef8;
+  --bg-dot: #cfe3f2;
+  --panel: #ffffff;
+  --panel-2: #f6fafd;
+  --line: #b8cad8;
+  --line-soft: #dbe6ee;
+  --text: #2f3a44;
+  --text-2: #6b7c8a;
+  --text-3: #9aaab6;
+  --accent: #ff7f2a; /* 주황 포인트 */
+  --accent-2: #ffb36b;
+  --accent-ink: #b14d06;
+  --sky: #2f9be0;
+  --sky-2: #9fd3f5;
+  --pink: #ff6fa3;
+  --green: #36b37e;
+  --danger: #e5484d;
+  --gold: #f4b63c;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow: 0 2px 0 rgba(47, 74, 98, 0.12), 0 8px 24px rgba(47, 74, 98, 0.08);
+  --font: 'Galmuri11', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --font-big: 'Galmuri14', 'Galmuri11', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  font-family: var(--font);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text);
+  background-color: var(--bg);
+  background-image: radial-gradient(var(--bg-dot) 1px, transparent 1px);
+  background-size: 8px 8px;
+  -webkit-font-smoothing: none;
+  user-select: none;
+  overflow: hidden;
+}
+
+input,
+textarea,
+button,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+::selection {
+  background: var(--accent-2);
+}
+
+/* 맥 hiddenInset 타이틀바 드래그 영역 */
+.drag {
+  -webkit-app-region: drag;
+}
+.no-drag,
+.drag button,
+.drag input,
+.drag a {
+  -webkit-app-region: no-drag;
+}
+
+/* ───────── 패널 ───────── */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.panel-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px dashed var(--line);
+  color: var(--sky);
+  font-weight: 700;
+}
+.panel-head .spacer {
+  flex: 1;
+}
+.panel-body {
+  padding: 12px;
+}
+.dashed {
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-sm);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-big);
+  font-weight: 400;
+  margin: 0;
+}
+h1 {
+  font-size: 28px;
+}
+h2 {
+  font-size: 15px;
+}
+h3 {
+  font-size: 12px;
+  font-family: var(--font);
+  font-weight: 700;
+}
+.muted {
+  color: var(--text-2);
+}
+.faint {
+  color: var(--text-3);
+}
+
+/* ───────── 버튼 ───────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: linear-gradient(#fff, #eef4f8);
+  box-shadow: 0 1px 0 rgba(47, 74, 98, 0.15);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    transform 0.05s,
+    background 0.15s,
+    border-color 0.15s;
+}
+.btn:hover {
+  border-color: var(--sky);
+}
+.btn:active {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+.btn-primary {
+  background: linear-gradient(#ff9a4d, var(--accent));
+  border-color: #e8691a;
+  color: #fff;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
+}
+.btn-primary:hover {
+  border-color: var(--accent-ink);
+}
+.btn-sky {
+  background: linear-gradient(#5db6ef, var(--sky));
+  border-color: #1f86c9;
+  color: #fff;
+}
+.btn-ghost {
+  background: transparent;
+  box-shadow: none;
+  border-color: transparent;
+}
+.btn-ghost:hover {
+  background: var(--panel-2);
+  border-color: var(--line-soft);
+}
+.btn-danger {
+  color: var(--danger);
+}
+.btn-sm {
+  height: 24px;
+  padding: 0 8px;
+  font-size: 11px;
+}
+.btn-lg {
+  height: 40px;
+  padding: 0 20px;
+  font-size: 14px;
+}
+.btn-icon {
+  width: 30px;
+  padding: 0;
+}
+
+/* ───────── 입력 ───────── */
+.input {
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  outline: none;
+  user-select: text;
+}
+.input:focus {
+  border-color: var(--sky);
+  box-shadow: 0 0 0 3px rgba(47, 155, 224, 0.15);
+}
+textarea.input {
+  height: auto;
+  padding: 8px 10px;
+  resize: none;
+}
+
+/* ───────── 탭 (미니홈피 오른쪽 탭 느낌) ───────── */
+.tabs {
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
+}
+.tab {
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  background: var(--panel-2);
+  color: var(--text-2);
+  cursor: pointer;
+}
+.tab:hover {
+  color: var(--text);
+}
+.tab.active {
+  background: var(--sky);
+  border-color: var(--sky);
+  color: #fff;
+}
+.tab-body {
+  border: 1px solid var(--line);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) var(--radius-sm);
+  background: #fff;
+  padding: 10px;
+}
+
+/* ───────── 칩 / 스와치 ───────── */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  font-size: 11px;
+}
+.chip.on {
+  border-color: var(--accent);
+  background: #fff3ea;
+  color: var(--accent-ink);
+}
+.swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.6);
+}
+.swatch.active {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* 선택 가능한 옵션 카드 (파츠 선택 등) */
+.option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 4px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  cursor: pointer;
+  font-size: 11px;
+  color: var(--text-2);
+}
+.option:hover {
+  border-color: var(--sky-2);
+  background: #f4faff;
+}
+.option.active {
+  border-color: var(--accent);
+  background: #fff6ef;
+  color: var(--accent-ink);
+}
+
+/* ───────── 토글 스위치 ───────── */
+.switch {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  flex: none;
+  border-radius: 999px;
+  background: #c9d5de;
+  border: 1px solid #b4c3cf;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: left 0.15s;
+}
+.switch.on {
+  background: var(--accent);
+  border-color: #e8691a;
+}
+.switch.on::after {
+  left: 18px;
+}
+
+/* ───────── 모달 ───────── */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 50, 70, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  animation: fade-in 0.15s ease-out;
+}
+.modal {
+  width: min(520px, calc(100vw - 40px));
+  max-height: calc(100vh - 60px);
+  overflow: auto;
+  animation: pop-in 0.18s ease-out;
+}
+
+/* 토스트 */
+.toasts {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+  z-index: 200;
+  pointer-events: none;
+}
+.toast {
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(36, 52, 66, 0.92);
+  color: #fff;
+  box-shadow: var(--shadow);
+  animation: pop-in 0.18s ease-out;
+}
+
+.pixel {
+  image-rendering: pixelated;
+}
+
+.scroll {
+  overflow: auto;
+}
+.scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.scroll::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 4px;
+}
+.scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.grow {
+  flex: 1;
+  min-width: 0;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+}
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  25% {
+    transform: rotate(-8deg);
+  }
+  75% {
+    transform: rotate(8deg);
+  }
+}

@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>미니미 광장 다운로드</title>
+    <meta name="description" content="나만의 미니미를 만들고 친구들과 광장에 모여요. 대답 없는 친구에겐 화면 가득 불꽃놀이를!" />
+    <style>
+      /* 다운로드 링크: GitHub Releases 의 latest/download 는 주소가 고정이라 SmartScreen 평판이 유지된다 */
+      :root {
+        --bg: #dfeef8;
+        --dot: #cfe3f2;
+        --panel: #fff;
+        --line: #b8cad8;
+        --text: #2f3a44;
+        --text-2: #6b7c8a;
+        --accent: #ff7f2a;
+        --sky: #2f9be0;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', system-ui, sans-serif;
+        color: var(--text);
+        background: var(--bg) radial-gradient(var(--dot) 1px, transparent 1px) 0 0 / 8px 8px;
+        min-height: 100vh;
+      }
+      .wrap {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 40px 16px 64px;
+      }
+      header {
+        text-align: center;
+        margin-bottom: 24px;
+      }
+      .logo {
+        font-size: 34px;
+        font-weight: 800;
+        color: var(--sky);
+        letter-spacing: -0.5px;
+      }
+      .logo span {
+        color: var(--accent);
+      }
+      .tag {
+        color: var(--text-2);
+        margin-top: 6px;
+        line-height: 1.6;
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        box-shadow:
+          0 2px 0 rgba(47, 74, 98, 0.12),
+          0 8px 24px rgba(47, 74, 98, 0.08);
+        overflow: hidden;
+      }
+      .tabs {
+        display: flex;
+        border-bottom: 1px dashed var(--line);
+      }
+      .tabs button {
+        flex: 1;
+        padding: 14px;
+        border: none;
+        background: #f6fafd;
+        font: inherit;
+        font-weight: 700;
+        color: var(--text-2);
+        cursor: pointer;
+      }
+      .tabs button.active {
+        background: #fff;
+        color: var(--accent);
+        box-shadow: inset 0 -3px 0 var(--accent);
+      }
+      .pane {
+        padding: 24px;
+        display: none;
+      }
+      .pane.active {
+        display: block;
+      }
+      .dl {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        padding: 16px;
+        border-radius: 10px;
+        background: linear-gradient(#ff9a4d, var(--accent));
+        color: #fff;
+        font-size: 18px;
+        font-weight: 800;
+        text-decoration: none;
+        border: 1px solid #e8691a;
+      }
+      .dl:active {
+        transform: translateY(1px);
+      }
+      .meta {
+        text-align: center;
+        color: var(--text-2);
+        font-size: 13px;
+        margin: 8px 0 20px;
+      }
+      ol {
+        margin: 0;
+        padding-left: 22px;
+        line-height: 1.9;
+      }
+      li b {
+        color: var(--sky);
+      }
+      .note {
+        margin-top: 16px;
+        padding: 12px 14px;
+        border-radius: 10px;
+        background: #fff6ee;
+        color: #b14d06;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+      .how {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-top: 20px;
+      }
+      .how div {
+        background: rgba(255, 255, 255, 0.75);
+        border: 1px dashed var(--line);
+        border-radius: 12px;
+        padding: 14px 10px;
+        text-align: center;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      .how b {
+        display: block;
+        font-size: 24px;
+        margin-bottom: 4px;
+      }
+      footer {
+        text-align: center;
+        color: var(--text-2);
+        font-size: 12px;
+        margin-top: 28px;
+      }
+      @media (max-width: 520px) {
+        .how {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <div class="logo"><span>✦</span> 미니미 광장</div>
+        <div class="tag">나만의 미니미를 만들고 친구들과 광장에 모여요.<br />불러도 대답 없는 친구에겐 화면 가득 불꽃놀이를 🎆</div>
+      </header>
+
+      <div class="card">
+        <div class="tabs">
+          <button data-os="mac">🍎 맥 (Mac)</button>
+          <button data-os="win">🪟 윈도우 (Windows)</button>
+        </div>
+
+        <div class="pane" id="pane-mac">
+          <a class="dl" href="https://github.com/kanchoooo/minimi-plaza/releases/latest/download/MinimiPlaza-mac.dmg">⬇ 맥용 다운로드</a>
+          <div class="meta">macOS 11 이상 · 애플 실리콘 / 인텔 모두 지원</div>
+          <ol>
+            <li>받은 <b>MinimiPlaza-mac.dmg</b> 파일을 열어요.</li>
+            <li><b>미니미 광장 (MinimiPlaza)</b> 아이콘을 <b>응용 프로그램</b> 폴더로 끌어다 놓아요.</li>
+            <li>응용 프로그램(Launchpad)에서 <b>미니미 광장</b>을 실행해요.</li>
+            <li>미니미를 만들고, 광장 코드를 친구에게 보내면 끝!</li>
+          </ol>
+          <div class="note">💡 창을 닫아도 메뉴 막대(오른쪽 위)에 ✦ 아이콘으로 남아 있어요. 그래야 친구가 부를 때 알림과 불꽃을 받을 수 있어요.</div>
+        </div>
+
+        <div class="pane" id="pane-win">
+          <a class="dl" href="https://github.com/kanchoooo/minimi-plaza/releases/latest/download/MinimiPlaza-Setup.exe">⬇ 윈도우용 다운로드</a>
+          <div class="meta">Windows 10 / 11 (64비트)</div>
+          <ol>
+            <li>받은 <b>MinimiPlaza-Setup.exe</b> 를 실행해요.</li>
+            <li>파란 창 <b>“Windows의 PC 보호”</b>가 뜨면 <b>추가 정보</b>를 누르고 <b>실행</b>을 눌러요.</li>
+            <li>설치가 끝나면 미니미 광장이 자동으로 열려요.</li>
+            <li>미니미를 만들고, 광장 코드를 친구에게 보내면 끝!</li>
+          </ol>
+          <div class="note">
+            💡 “PC 보호” 창은 새로 나온 프로그램이라 뜨는 거예요. <b>추가 정보 → 실행</b>을 누르면 설치돼요.<br />창을 닫아도 작업 표시줄 오른쪽 트레이(^)에 ✦ 아이콘으로 남아 있어요.
+          </div>
+        </div>
+      </div>
+
+      <div class="how">
+        <div><b>📣</b>광장에서 친구를<br />불러요</div>
+        <div><b>⏰</b>대답이 없으면…</div>
+        <div><b>🎆</b>친구 화면 가득<br />불꽃으로 쏴요</div>
+      </div>
+
+      <footer>불꽃은 같은 광장 친구가 불러도 대답이 없을 때만 보낼 수 있어요 · 받는 쪽에서 끄기/방해금지/차단 가능 · ESC로 바로 닫기</footer>
+    </div>
+
+    <script>
+      // 접속한 OS 탭을 자동으로 선택
+      const ua = navigator.userAgent
+      const guess = /Windows/i.test(ua) ? 'win' : 'mac'
+      const select = (os) => {
+        document.querySelectorAll('.tabs button').forEach((b) => b.classList.toggle('active', b.dataset.os === os))
+        document.querySelectorAll('.pane').forEach((p) => p.classList.toggle('active', p.id === 'pane-' + os))
+      }
+      document.querySelectorAll('.tabs button').forEach((b) => b.addEventListener('click', () => select(b.dataset.os)))
+      select(new URLSearchParams(location.search).get('os') || guess)
+    </script>
+  </body>
+</html>

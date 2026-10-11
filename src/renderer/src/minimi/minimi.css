@@ -1,0 +1,277 @@
+/* ───────── 미니미 에디터 ───────── */
+.mm-editor {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.mm-preview {
+  flex: 0 0 236px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+}
+
+.mm-stage {
+  position: relative;
+  flex: 1;
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 28px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: linear-gradient(#e6f4ff 0%, #ffffff 72%);
+  overflow: hidden;
+}
+.mm-stage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(47, 155, 224, 0.12) 1px, transparent 1px);
+  background-size: 10px 10px;
+  pointer-events: none;
+}
+.mm-stage-inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.mm-stage-inner canvas {
+  position: relative;
+  z-index: 1;
+}
+.mm-shadow {
+  width: 190px;
+  height: 40px;
+  margin-top: -26px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse 34% 26% at 50% 50%, rgba(47, 74, 98, 0.24), transparent 100%), #d9edfb;
+}
+.mm-stage-label {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  color: var(--sky);
+  font-size: 11px;
+}
+
+.mm-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.mm-chips {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.mm-chips .chip {
+  cursor: pointer;
+}
+
+.mm-side {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.mm-side .tab-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.mm-group + .mm-group {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--line-soft);
+}
+.mm-group-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  color: var(--text-2);
+  font-weight: 700;
+}
+.mm-group-title .hint {
+  font-weight: 400;
+  color: var(--text-3);
+  font-size: 11px;
+}
+
+.mm-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(68px, 1fr));
+  gap: 5px;
+}
+.mm-options.face {
+  grid-template-columns: repeat(auto-fill, minmax(58px, 1fr));
+}
+.mm-options .option canvas {
+  image-rendering: pixelated;
+}
+
+.mm-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
+}
+.mm-custom {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  background: conic-gradient(#ff6f8e, #ffe17a, #a6e3a1, #8fcdf5, #b49ae8, #ff6f8e);
+  cursor: pointer;
+  overflow: hidden;
+}
+.mm-custom input {
+  position: absolute;
+  inset: -6px;
+  width: 40px;
+  height: 40px;
+  opacity: 0;
+  cursor: pointer;
+}
+.mm-custom.active {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.mm-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ───────── 도트 에디터 ───────── */
+.dot-editor {
+  display: flex;
+  gap: 10px;
+  height: 100%;
+  min-height: 0;
+}
+.dot-canvas-wrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-sm);
+  background-color: #fff;
+  background-image:
+    linear-gradient(45deg, #f1f5f8 25%, transparent 25%),
+    linear-gradient(-45deg, #f1f5f8 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #f1f5f8 75%),
+    linear-gradient(-45deg, transparent 75%, #f1f5f8 75%);
+  background-size: 16px 16px;
+  background-position:
+    0 0,
+    0 8px,
+    8px -8px,
+    -8px 0;
+}
+.dot-canvas-wrap canvas {
+  image-rendering: pixelated;
+  touch-action: none;
+  cursor: crosshair;
+  box-shadow: 0 0 0 1px var(--line);
+}
+.dot-tools {
+  flex: 0 0 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.dot-toolset {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px;
+}
+.dot-toolset .btn {
+  padding: 0 4px;
+  font-size: 11px;
+}
+.dot-toolset .btn.active {
+  border-color: var(--accent);
+  background: #fff3ea;
+  color: var(--accent-ink);
+}
+.dot-palette {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 3px;
+}
+.dot-palette .swatch {
+  width: 100%;
+  height: 16px;
+  border-radius: 3px;
+}
+.dot-current {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-2);
+}
+.dot-current .swatch {
+  width: 26px;
+  height: 18px;
+  cursor: default;
+}
+.dot-zoom {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--text-2);
+}
+
+/* ───────── 랩(개발용) ───────── */
+.lab-root {
+  height: 100%;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.lab-editor {
+  height: 560px;
+  width: 780px;
+  flex: none;
+  padding: 12px;
+}
+.lab-section {
+  flex: none;
+}
+.lab-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px;
+}
+.lab-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 11px;
+  color: var(--text-2);
+}
+.lab-cell canvas {
+  background: #f3f8fc;
+  border-radius: 4px;
+}
