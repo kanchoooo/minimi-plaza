@@ -223,6 +223,11 @@
 .recent-go {
   color: var(--sky);
 }
+.lobby-more-apps {
+  align-self: center;
+  color: var(--text);
+  text-decoration: none;
+}
 .lobby-how {
   display: flex;
   flex-wrap: wrap;

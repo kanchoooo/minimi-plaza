@@ -3,6 +3,8 @@ import { MinimiView } from '@/minimi/MinimiView'
 import { normalizeRoomCode } from '@/net/session'
 import { app, createRoom, go, joinRoom, myMinimi, openComposer, openSettings, toast } from '@/state/app'
 
+const MORE_APPS_URL = 'https://easyticket.co.kr/apps/'
+
 function timeAgo(ts: number): string {
   const m = Math.floor((Date.now() - ts) / 60000)
   if (m < 1) return '방금'
@@ -119,6 +121,10 @@ export function Lobby(): React.JSX.Element {
           <span className="faint">→</span>
           <span>🎆 친구 화면에 불꽃 쏘기</span>
         </div>
+
+        <a className="btn lobby-more-apps" href={MORE_APPS_URL} target="_blank" rel="noreferrer">
+          🧩 개발자의 다른 앱 보기
+        </a>
       </div>
     </div>
   )
