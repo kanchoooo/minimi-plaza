@@ -25,6 +25,12 @@ export interface TextShapeOptions {
   weight?: number
   /** 획을 두껍게 (글자 크기 대비) */
   stroke?: number
+  /** 자간 (글자 크기 대비) — 입자 번짐에 글자끼리 붙지 않게 */
+  letterSpacing?: number
+  /** 줄 간격 (글자 크기 대비) */
+  lineGap?: number
+  /** 점 간격 하한 (px) — 입자 크기보다 촘촘하면 빛이 겹쳐 하얗게 뭉친다 */
+  minStep?: number
 }
 
 /** 긴 한 줄은 2줄로 나눈다 (공백 우선, 없으면 가운데) */
@@ -62,11 +68,13 @@ export function textShape(text: string, opt: TextShapeOptions): ShapePoints {
   const weight = opt.weight ?? 800
   const family = opt.font ?? MESSAGE_FONT
   // 1) 크기 맞추기: 기준 100px 로 재고 비율로 키운다
+  const spacing = opt.letterSpacing ?? 0
   const probe = 100
   sctx.font = `${weight} ${probe}px ${family}`
+  sctx.letterSpacing = `${probe * spacing}px`
   const widths = lines.map((l) => sctx.measureText(l).width || probe)
   const maxWidth = Math.max(...widths)
-  const lineGap = 1.12
+  const lineGap = opt.lineGap ?? 1.12
   let size = Math.min(opt.maxLineH, (opt.maxW / maxWidth) * probe, opt.maxH / (lines.length * lineGap))
   size = Math.max(24, size)
 
@@ -74,6 +82,7 @@ export function textShape(text: string, opt: TextShapeOptions): ShapePoints {
   const ss = 0.5
   const fs = size * ss
   sctx.font = `${weight} ${fs}px ${family}`
+  sctx.letterSpacing = `${fs * spacing}px`
   const lw = lines.map((l) => sctx.measureText(l).width)
   const cw = Math.ceil(Math.max(...lw) + fs * 0.4)
   const lineH = fs * lineGap
@@ -82,6 +91,7 @@ export function textShape(text: string, opt: TextShapeOptions): ShapePoints {
   scratch.height = ch
   sctx.clearRect(0, 0, cw, ch)
   sctx.font = `${weight} ${fs}px ${family}`
+  sctx.letterSpacing = `${fs * spacing}px`
   sctx.textAlign = 'center'
   sctx.textBaseline = 'middle'
   sctx.fillStyle = '#fff'
@@ -94,6 +104,7 @@ export function textShape(text: string, opt: TextShapeOptions): ShapePoints {
     if (sctx.lineWidth > 0) sctx.strokeText(l, cw / 2, y)
   })
   const data = sctx.getImageData(0, 0, cw, ch).data
+  sctx.letterSpacing = '0px'
 
   // 3) 실제 잉크 영역과 면적
   let minX = cw,
@@ -114,16 +125,17 @@ export function textShape(text: string, opt: TextShapeOptions): ShapePoints {
   }
   if (ink === 0) return { pts: new Float32Array(0), count: 0, width: 0, height: 0, cell: 3 }
   const inkArea = ink / (ss * ss)
-  const step = Math.max(2.1, Math.min(7, Math.sqrt(inkArea / opt.targetCount)))
+  const step = Math.max(opt.minStep ?? 2.1, Math.min(7, Math.sqrt(inkArea / opt.targetCount)))
   const cx = (minX + maxX) / 2 / ss
   const cy = (minY + maxY) / 2 / ss
   const W = cw / ss
   const H = ch / ss
   const out: number[] = []
+  // 칸 가운데 근처에만 흔든다 — 완전 무작위면 뭉침·빈틈이 생겨 획 가장자리가 지저분해진다
   for (let gy = 0; gy < H; gy += step) {
     for (let gx = 0; gx < W; gx += step) {
-      const x = gx + Math.random() * step
-      const y = gy + Math.random() * step
+      const x = gx + step * (0.5 + (Math.random() - 0.5) * 0.6)
+      const y = gy + step * (0.5 + (Math.random() - 0.5) * 0.6)
       const sx = Math.min(cw - 1, (x * ss) | 0)
       const sy = Math.min(ch - 1, (y * ss) | 0)
       if (data[(sy * cw + sx) * 4 + 3] > 127) out.push(x - cx, y - cy)

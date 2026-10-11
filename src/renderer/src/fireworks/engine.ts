@@ -330,8 +330,12 @@ export class FireworksStage {
         maxLineH: H * 0.27,
         targetCount: Math.round(9000 * q),
         font: MESSAGE_FONT,
-        weight: 800,
-        stroke: 0.06
+        // 너무 굵으면 입자 번짐에 받침·구멍(ㅇ ㅁ ㅂ)이 메워져 못 읽는다
+        weight: 600,
+        stroke: 0,
+        letterSpacing: 0.06,
+        lineGap: 1.24,
+        minStep: 3.3 * scale
       })
       mainStyle = {
         k: 15,
