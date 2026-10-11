@@ -1,0 +1,65 @@
+.emoji-wrap {
+  position: relative;
+  flex: none;
+}
+.emoji-btn {
+  font-size: 16px;
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif;
+}
+.emoji-btn.on {
+  border-color: var(--accent);
+  background: #fff6ee;
+}
+.emoji-pop {
+  position: absolute;
+  left: -2px;
+  bottom: 38px;
+  z-index: 30;
+  width: 276px;
+  padding: 6px;
+  animation: pop-in 0.15s ease-out;
+}
+.emoji-tabs {
+  display: flex;
+  gap: 2px;
+  padding-bottom: 6px;
+  margin-bottom: 4px;
+  border-bottom: 1px dashed var(--line-soft);
+}
+.emoji-tab,
+.emoji-cell {
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 6px;
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+  line-height: 1;
+}
+.emoji-tab {
+  flex: 1;
+  height: 30px;
+  font-size: 17px;
+  opacity: 0.55;
+}
+.emoji-tab.active {
+  opacity: 1;
+  background: #eaf5fd;
+}
+.emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 2px;
+  max-height: 180px;
+  overflow-x: hidden;
+}
+.emoji-cell {
+  height: 32px;
+  font-size: 20px;
+}
+.emoji-cell:hover,
+.emoji-tab:hover {
+  background: var(--panel-2);
+  opacity: 1;
+}

@@ -448,23 +448,11 @@
 .chat-line.self .chat-name {
   color: var(--accent);
 }
-.chat-quick {
-  display: flex;
-  gap: 4px;
-  flex-wrap: wrap;
-  padding: 6px 8px 0;
-  border-top: 1px dashed var(--line-soft);
-}
-.chat-quick .chip {
-  cursor: pointer;
-}
-.chat-quick .chip:hover {
-  border-color: var(--sky);
-}
 .chat-input {
   display: flex;
   gap: 6px;
   padding: 8px;
+  border-top: 1px dashed var(--line-soft);
 }
 
 /* ───────── 부르기 팝업 ───────── */

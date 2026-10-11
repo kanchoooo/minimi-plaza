@@ -13,7 +13,7 @@ function loadImage(src: string): Promise<HTMLImageElement> {
  * File / data URL → 투명 테두리를 잘라내고 최대 maxSide px 로 축소한 PNG data URL.
  * 투명도는 유지한다. GIF 는 첫 프레임만 쓴다. 결과는 보통 수십 KB.
  */
-export async function prepareImageForFirework(src: File | string, maxSide = 220): Promise<string> {
+export async function prepareImageForFirework(src: File | string, maxSide = 320): Promise<string> {
   const url = typeof src === 'string' ? src : URL.createObjectURL(src)
   try {
     const img = await loadImage(url)

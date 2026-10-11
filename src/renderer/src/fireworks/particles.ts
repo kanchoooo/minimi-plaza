@@ -1,4 +1,5 @@
 import { Particle, ParticleContainer, Rectangle, Texture } from 'pixi.js'
+import type { BLEND_MODES } from 'pixi.js'
 
 /**
  * 입자 저장소 (구조체-배열 형태, 풀링).
@@ -75,7 +76,8 @@ export class ParticleField {
 
   private arrays: (Float32Array | Uint8Array)[]
 
-  constructor(texture: Texture, cap = 60000) {
+  /** blendMode: 'add' = 빛처럼 더해짐(불꽃) / 'normal' = 제 색 그대로(사진 불꽃) */
+  constructor(texture: Texture, cap = 60000, blendMode: BLEND_MODES = 'add') {
     this.cap = cap
     const f = (): Float32Array => new Float32Array(cap)
     this.x = f()
@@ -114,7 +116,7 @@ export class ParticleField {
 
     this.container = new ParticleContainer({
       texture,
-      blendMode: 'add',
+      blendMode,
       dynamicProperties: { position: true, rotation: true, vertex: true, color: true, uvs: false }
     })
     this.texture = texture

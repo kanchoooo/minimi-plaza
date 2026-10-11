@@ -28,8 +28,10 @@ export function Composer({ target }: { target: ComposerTarget }): React.JSX.Elem
   const loadFile = async (f: File | undefined | null): Promise<void> => {
     if (!f || !f.type.startsWith('image/')) return
     try {
-      let url = await prepareImageForFirework(f, 220)
-      if (url.length > 550_000) url = await prepareImageForFirework(f, 150)
+      // 사진은 촘촘할수록 잘 보인다: 320px → 너무 크면 240 → 170
+      let url = await prepareImageForFirework(f, 320)
+      if (url.length > 550_000) url = await prepareImageForFirework(f, 240)
+      if (url.length > 550_000) url = await prepareImageForFirework(f, 170)
       setImage(url)
       setTab('image')
     } catch {

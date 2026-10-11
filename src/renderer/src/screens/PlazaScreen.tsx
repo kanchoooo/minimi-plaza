@@ -16,6 +16,7 @@ import {
   unblock
 } from '@/state/app'
 import type { AppState, Member } from '@/state/app'
+import { EmojiPicker } from '@/ui/EmojiPicker'
 
 export function PlazaScreen(): React.JSX.Element {
   return (
@@ -232,13 +233,27 @@ function BlockedRow({ m }: { m: Member }): React.JSX.Element {
   )
 }
 
-const QUICK = ['👋 안녕!', 'ㅋㅋㅋㅋ', '어디야?', '보고싶어 💕', '대답해!!']
-
 function ChatPanel(): React.JSX.Element {
   const chat = app.use((s) => s.chat)
   const blocked = app.use((s) => s.persisted.settings.blocked)
   const [text, setText] = useState('')
   const list = useRef<HTMLDivElement>(null)
+  const input = useRef<HTMLInputElement>(null)
+
+  // 커서 자리에 이모지 넣기
+  const insertEmoji = (emoji: string): void => {
+    const el = input.current
+    const start = el?.selectionStart ?? text.length
+    const end = el?.selectionEnd ?? text.length
+    const next = (text.slice(0, start) + emoji + text.slice(end)).slice(0, 200)
+    setText(next)
+    requestAnimationFrame(() => {
+      if (!el) return
+      el.focus()
+      const pos = Math.min(next.length, start + emoji.length)
+      el.setSelectionRange(pos, pos)
+    })
+  }
   const visible = chat.filter((l) => !l.uid || !blocked.some((b) => b.id === l.uid))
 
   useEffect(() => {
@@ -246,9 +261,9 @@ function ChatPanel(): React.JSX.Element {
     if (el) el.scrollTop = el.scrollHeight
   }, [visible.length])
 
-  const send = (t = text): void => {
-    if (!t.trim()) return
-    sendChat(t)
+  const send = (): void => {
+    if (!text.trim()) return
+    sendChat(text)
     setText('')
   }
 
@@ -271,15 +286,10 @@ function ChatPanel(): React.JSX.Element {
           )
         )}
       </div>
-      <div className="chat-quick">
-        {QUICK.map((q) => (
-          <button key={q} className="chip" onClick={() => send(q)}>
-            {q}
-          </button>
-        ))}
-      </div>
       <div className="chat-input">
+        <EmojiPicker onPick={insertEmoji} />
         <input
+          ref={input}
           className="input grow"
           value={text}
           maxLength={200}

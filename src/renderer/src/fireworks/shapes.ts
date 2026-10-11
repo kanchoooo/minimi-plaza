@@ -154,12 +154,24 @@ function loadImage(src: string): Promise<HTMLImageElement> {
 }
 
 /** 이미지 → 픽셀마다 입자 1개 (색 그대로). 너무 많으면 성기게 고른다 */
+/** 사진 픽셀 → 빛나는 색: HSV 의 밝기(V)를 0.24~1 로 들어 올리고 채도를 살짝 높인다 */
+export function emissive(r: number, g: number, b: number): [number, number, number] {
+  const max = Math.max(r, g, b)
+  const min = Math.min(r, g, b)
+  const v2 = 0.24 + 0.76 * Math.pow(max, 0.7)
+  if (max <= 0) return [v2, v2, v2]
+  const s = Math.min(1, ((max - min) / max) * 1.15)
+  // 같은 색조에서 V, S 만 바꾼다
+  const k = (c: number): number => v2 * (1 - s + s * (max - min > 0 ? (c - min) / (max - min) : 0))
+  return [k(r), k(g), k(b)]
+}
+
 export async function imageShape(dataUrl: string, opt: ImageShapeOptions): Promise<ShapePoints> {
   const img = await loadImage(dataUrl)
   let w = img.naturalWidth || img.width
   let h = img.naturalHeight || img.height
-  // 안전장치: 아주 큰 이미지가 와도 240px 로 줄여서 샘플
-  const cap = 240 / Math.max(w, h)
+  // 안전장치: 아주 큰 이미지가 와도 340px 로 줄여서 샘플
+  const cap = 340 / Math.max(w, h)
   if (cap < 1) {
     w = Math.max(1, Math.round(w * cap))
     h = Math.max(1, Math.round(h * cap))
@@ -174,10 +186,7 @@ export async function imageShape(dataUrl: string, opt: ImageShapeOptions): Promi
   // 쓸 픽셀 세기
   let usable = 0
   for (let i = 0; i < w * h; i++) {
-    const a = data[i * 4 + 3]
-    if (a < 40) continue
-    const lum = (data[i * 4] * 0.3 + data[i * 4 + 1] * 0.59 + data[i * 4 + 2] * 0.11) * (a / 255)
-    if (lum < 22) continue // 거의 검정 → 가산 혼합에선 안 보이므로 생략 (윤곽선이 '빈칸'으로 남는다)
+    if (data[i * 4 + 3] < 40) continue
     usable++
   }
   const stride = usable > opt.maxCount ? Math.sqrt(usable / opt.maxCount) : 1
@@ -197,12 +206,9 @@ export async function imageShape(dataUrl: string, opt: ImageShapeOptions): Promi
       const i = (y * w + x) * 4
       const a = data[i + 3]
       if (a < 40) continue
-      const af = a / 255
-      const r = data[i] / 255
-      const g = data[i + 1] / 255
-      const b = data[i + 2] / 255
-      const lum = (r * 0.3 + g * 0.59 + b * 0.11) * af
-      if (lum < 22 / 255) continue
+      // 불꽃은 빛이라 어두운 색은 안 보인다 → 색조는 그대로 두고 밝기만 끌어올린다
+      // (어두운 사진도 잘 보이고, 눈처럼 원래 어두운 곳은 상대적으로 어둡게 남아 윤곽이 산다)
+      const [r, g, b] = emissive(data[i] / 255, data[i + 1] / 255, data[i + 2] / 255)
       for (let sy = 0; sy < sub; sy++) {
         for (let sx = 0; sx < sub; sx++) {
           const jx = (Math.random() - 0.5) * 0.3
@@ -210,7 +216,7 @@ export async function imageShape(dataUrl: string, opt: ImageShapeOptions): Promi
           const px = sub === 1 ? fx + 0.5 + jx : fx + (sx + 0.5 + jx) / sub
           const py = sub === 1 ? fy + 0.5 + jy : fy + (sy + 0.5 + jy) / sub
           pts.push((px - w / 2) * cell, (py - h / 2) * cell)
-          cols.push(r * af, g * af, b * af)
+          cols.push(r, g, b)
         }
       }
     }

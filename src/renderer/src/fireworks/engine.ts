@@ -117,9 +117,29 @@ function initialQuality(gl: WebGLRenderingContext | WebGL2RenderingContext | nul
 const rand = Math.random
 const pick = <T,>(a: T[]): T => a[(rand() * a.length) | 0]
 
+/** 가운데가 더 어두운 밤하늘 배경 (화면 크기로 늘려 쓴다) */
+function makeBackdropTexture(): Texture {
+  const c = document.createElement('canvas')
+  c.width = 256
+  c.height = 160
+  const g = c.getContext('2d')!
+  const grad = g.createRadialGradient(128, 70, 10, 128, 80, 170)
+  grad.addColorStop(0, 'rgba(8, 10, 26, 0.72)')
+  grad.addColorStop(0.6, 'rgba(8, 10, 26, 0.6)')
+  grad.addColorStop(1, 'rgba(8, 10, 26, 0.46)')
+  g.fillStyle = grad
+  g.fillRect(0, 0, c.width, c.height)
+  return Texture.from(c)
+}
+
 export class FireworksStage {
   private app!: Application
   private field!: ParticleField
+  /** 사진 불꽃용 (제 색 그대로 칠하는 normal 블렌드 — 겹쳐도 하얗게 타지 않는다) */
+  private imgField!: ParticleField
+  /** 밤하늘처럼 화면을 살짝 어둡게 까는 배경 (밝은 화면에서도 불꽃이 잘 보이게) */
+  private backdrop!: Sprite
+  private dim = 0
   private fx!: Container
   private tex!: Texture
   private caption!: HTMLDivElement
@@ -173,10 +193,17 @@ export class FireworksStage {
 
     this.tex = makeGlowTexture()
     this.field = new ParticleField(this.tex, 70000)
+    this.imgField = new ParticleField(this.tex, 45000, 'normal')
+    this.backdrop = new Sprite({ texture: makeBackdropTexture(), alpha: 0 })
     this.fx = new Container()
+    app.stage.addChild(this.backdrop)
+    app.stage.addChild(this.imgField.container)
     app.stage.addChild(this.field.container)
     app.stage.addChild(this.fx)
     this.field.setBounds(app.screen.width, app.screen.height)
+    this.imgField.setBounds(app.screen.width, app.screen.height)
+    this.backdrop.width = app.screen.width
+    this.backdrop.height = app.screen.height
     window.addEventListener('resize', () => this.fitToWindow())
 
     const gl = (app.renderer as unknown as { gl?: WebGLRenderingContext }).gl ?? null
@@ -221,6 +248,9 @@ export class FireworksStage {
       r.resize(w, h, res)
     }
     this.field.setBounds(w, h)
+    this.imgField.setBounds(w, h)
+    this.backdrop.width = w
+    this.backdrop.height = h
   }
 
   /** 지난 재생의 프레임률로 입자 수를 조절 (0.4 ~ 1) */
@@ -263,9 +293,9 @@ export class FireworksStage {
     let mainCy: number
     const content = show.content
     if (content.kind === 'image') {
-      mainCy = H * 0.46
+      mainCy = H * 0.465
       try {
-        main = await imageShape(content.dataUrl, { maxW: W * 0.8, maxH: H * 0.66, maxCount: Math.round(30000 * q) })
+        main = await imageShape(content.dataUrl, { maxW: W * 0.86, maxH: H * 0.78, maxCount: Math.round(32000 * q) })
       } catch (err) {
         console.warn('[fireworks] image failed', err)
         main = null
@@ -279,7 +309,7 @@ export class FireworksStage {
         heatHold: 0.12,
         cool: 0.38,
         heat: 0.95,
-        size: Math.max(1.5, Math.min(4.2, cell * 0.92)),
+        size: Math.max(1.8, Math.min(5.2, cell * 1.15)),
         twinkle: 0.4,
         streakForm: 0.006,
         streakFree: 0.02,
@@ -375,7 +405,7 @@ export class FireworksStage {
 
     if (main && main.count > 0) {
       const flash = content.kind === 'image' ? H * 0.2 : H * 0.16
-      this.scheduleShapeRocket(burstAt, W / 2, mainCy, main, mainStyle!, mainColor!, flash, 1)
+      this.scheduleShapeRocket(burstAt, W / 2, mainCy, main, mainStyle!, mainColor!, flash, 1, content.kind === 'image' ? this.imgField : this.field)
       if (content.kind === 'text') {
         // 머무는 동안 아래로 흘러내리는 반짝이
         const pal = content.palette === 'rainbow' ? paletteRgb('gold') : paletteRgb(content.palette)
@@ -425,6 +455,9 @@ export class FireworksStage {
     this.flashes.length = 0
     this.emitters.length = 0
     this.field.clear()
+    this.imgField.clear()
+    this.dim = 0
+    this.backdrop.alpha = 0
     this.caption.style.opacity = '0'
     this.finish()
   }
@@ -448,8 +481,8 @@ export class FireworksStage {
   private lastCueTime(): number {
     let last = this.t
     for (const c of this.cues) last = Math.max(last, c.at)
-    if (this.field.n > 0) {
-      for (let i = 0; i < this.field.n; i += 97) last = Math.max(last, this.field.dieAt[i])
+    for (const f of [this.field, this.imgField]) {
+      for (let i = 0; i < f.n; i += 97) last = Math.max(last, f.dieAt[i])
     }
     return last
   }
@@ -476,7 +509,8 @@ export class FireworksStage {
     style: ShapeStyle,
     color: (i: number, s: ShapePoints) => RGB,
     flashSize: number,
-    power: number
+    power: number,
+    field: ParticleField = this.field
   ): void {
     const H = this.H
     const g = GRAVITY_H * H
@@ -490,7 +524,7 @@ export class FireworksStage {
       if (this.sound) this.sfx.launch(fuse, pan * 0.6, 0.9)
       this.launchRocket(cx, H + 6, vy0, g, fuse, () => {
         this.addFlash(cx, cy, flashSize, 0.85)
-        this.burstShape(cx, cy, shape, style, color)
+        this.burstShape(cx, cy, shape, style, color, field)
         if (this.sound) this.sfx.burst(power, pan * 0.6, power > 0.9 ? 26 : 14)
       })
     })
@@ -556,8 +590,14 @@ export class FireworksStage {
     this.flashes.push({ sprite, born: this.t, life: 0.32, size, alpha })
   }
 
-  private burstShape(cx: number, cy: number, shape: ShapePoints, st: ShapeStyle, color: (i: number, s: ShapePoints) => RGB): void {
-    const f = this.field
+  private burstShape(
+    cx: number,
+    cy: number,
+    shape: ShapePoints,
+    st: ShapeStyle,
+    color: (i: number, s: ShapePoints) => RGB,
+    f: ParticleField = this.field
+  ): void {
     const t = this.t
     const pts = shape.pts
     for (let j = 0; j < shape.count; j++) {
@@ -702,6 +742,9 @@ export class FireworksStage {
     }
     // 마지막 프레임을 지운다
     this.field.container.particleChildren.length = 0
+    this.imgField.container.particleChildren.length = 0
+    this.dim = 0
+    this.backdrop.alpha = 0
     this.app.render()
     this.caption.style.opacity = '0'
     this.caption.style.transform = 'translateX(-50%) translateY(8px)'
@@ -774,6 +817,15 @@ export class FireworksStage {
     }
 
     this.field.update(t, dt)
+    this.imgField.update(t, dt)
+
+    // 배경 어둡게: 불꽃이 남아 있는 동안 켜고, 거의 다 사라지면 걷는다
+    const alive = this.field.n + this.imgField.n
+    const busy = this.cues.length > 0 || this.rockets.length > 0 || alive > this.stats.peak * 0.12
+    const target = busy ? 1 : 0
+    this.dim += (target - this.dim) * Math.min(1, dt * (target > this.dim ? 3.2 : 1.6))
+    if (!busy && this.dim < 0.01) this.dim = 0
+    this.backdrop.alpha = this.dim
 
     // 폭발 섬광
     for (let i = this.flashes.length - 1; i >= 0; i--) {
@@ -795,12 +847,13 @@ export class FireworksStage {
     st.time += ms / 1000
     st.upd += u1 - u0
     if (st.frames > 3 && ms > st.worst) st.worst = ms
-    if (this.field.n > st.peak) st.peak = this.field.n
+    if (alive > st.peak) st.peak = alive
 
-    if (!this.cues.length && !this.rockets.length && !this.flashes.length && !this.emitters.length && this.field.n === 0) {
+    const idle = (): boolean => !this.cues.length && !this.rockets.length && this.field.n === 0 && this.imgField.n === 0 && this.dim === 0
+    if (idle() && !this.flashes.length && !this.emitters.length) {
       // 다음 틱에서 빈 화면이 그려진 뒤 멈춘다
       queueMicrotask(() => {
-        if (!this.cues.length && !this.rockets.length && this.field.n === 0) this.finish()
+        if (idle()) this.finish()
       })
     }
   }
