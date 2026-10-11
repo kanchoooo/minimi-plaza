@@ -5,7 +5,9 @@
 // 2) 맥북에서 유니버설 빌드 + Developer ID 서명 + 공증 → 같은 초안 릴리스에 올림
 // 3) 윈도우 파일까지 올라오면 릴리스 공개 → 설치된 앱들이 자동 업데이트
 import { execSync } from 'node:child_process'
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
+import { homedir } from 'node:os'
+import { join } from 'node:path'
 
 const sh = (cmd, opts = {}) => execSync(cmd, { stdio: 'inherit', ...opts })
 const out = (cmd) => execSync(cmd, { encoding: 'utf8' }).trim()
@@ -16,8 +18,8 @@ const PROFILE = process.env.APPLE_KEYCHAIN_PROFILE ?? 'minimi-notary'
 // ── 사전 점검 ──
 if (process.platform !== 'darwin') throw new Error('맥북에서 실행해 주세요 (맥 서명·공증은 맥에서만 가능)')
 if (out('git status --porcelain')) throw new Error('커밋하지 않은 변경이 있어요. 먼저 커밋해 주세요.')
-if (!out('security find-identity -v -p codesigning').includes('Developer ID Application')) {
-  throw new Error('키체인에 "Developer ID Application" 인증서가 없어요 (README 참고)')
+if (!existsSync(join(homedir(), '.minimi-signing', 'DeveloperID_Application.p12'))) {
+  throw new Error('서명 인증서(~/.minimi-signing/DeveloperID_Application.p12)가 없어요 (README 참고)')
 }
 try {
   execSync(`xcrun notarytool history --keychain-profile ${PROFILE}`, { stdio: 'ignore' })
@@ -35,10 +37,7 @@ sh('git push --follow-tags')
 sh(`gh release create ${tag} --draft --verify-tag --title "${tag}" --generate-notes`)
 
 // ── 2. 맥 빌드·서명·공증·업로드 ──
-sh('npx electron-vite build')
-sh('npx electron-builder --mac --universal --publish always', {
-  env: { ...process.env, GH_TOKEN: token, APPLE_KEYCHAIN_PROFILE: PROFILE }
-})
+sh('node scripts/build-mac.mjs --publish', { env: { ...process.env, GH_TOKEN: token, APPLE_KEYCHAIN_PROFILE: PROFILE } })
 
 // ── 3. 윈도우 빌드 기다렸다가 공개 ──
 console.log('\n윈도우 빌드(GitHub Actions) 기다리는 중…')

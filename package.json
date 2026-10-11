@@ -12,7 +12,7 @@
     "build": "electron-vite build",
     "start": "electron-vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json",
-    "dist:mac": "electron-vite build && APPLE_KEYCHAIN_PROFILE=${APPLE_KEYCHAIN_PROFILE:-minimi-notary} electron-builder --mac --universal --publish never",
+    "dist:mac": "node scripts/build-mac.mjs",
     "dist:mac:local": "electron-vite build && CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac --dir --publish never",
     "dist:win": "electron-vite build && electron-builder --win --x64 --publish never",
     "release": "node scripts/release.mjs"
