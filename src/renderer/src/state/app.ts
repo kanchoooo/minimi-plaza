@@ -1,7 +1,7 @@
 import type { FireworkContent, MinimiConfig, PersistedState, Settings } from '@shared/types'
-import { DEFAULT_SETTINGS } from '@shared/types'
+import { DEFAULT_SETTINGS, DOWNLOAD_PAGE } from '@shared/types'
 import { createStore } from './store'
-import { PlazaSession, makeRoomCode, newId, selfId } from '@/net/session'
+import { PlazaSession, makeRoomCode, newId, normalizeRoomCode, selfId } from '@/net/session'
 import type { FwRejectReason, HelloMsg, PeerStatus } from '@/net/session'
 import type { AvatarBadge, PlazaView } from '@/plaza/PlazaView'
 import { defaultMinimi } from '@/minimi'
@@ -149,6 +149,9 @@ export async function initApp(): Promise<void> {
   window.api.onNotificationClick((tag) => {
     if (tag.startsWith('call:')) answerCall(tag.slice(5))
   })
+  window.api.onJoinLink(handleJoinLink)
+  const link = await window.api.takeJoinLink()
+  if (link) handleJoinLink(link)
   window.api.onFireworksEnded(() => {
     /* 재생 끝 — 필요 시 후처리 */
   })
@@ -182,6 +185,47 @@ function tick(): void {
 
 // ───────── 프로필 ─────────
 let pendingAutoJoin: string | null = null
+
+/** 초대 링크로 앱이 열렸을 때: 미니미가 있으면 바로 입장, 없으면 만들고 나서 입장 */
+function handleJoinLink(url: string): void {
+  const code = normalizeRoomCode(url)
+  if (!code) return
+  const s = app.get()
+  if (s.room?.code === code) return
+  if (!(s.persisted.profile.name && s.persisted.profile.minimi)) {
+    pendingAutoJoin = code
+    toast('미니미를 만들면 친구의 광장으로 바로 갈게요 ✦', 4500)
+    return
+  }
+  joinRoom(code)
+  toast(`초대받은 광장 ${code} 에 들어왔어요!`)
+}
+
+/** 친구에게 보낼 초대 메시지 (코드 + 다운로드 링크) */
+export function inviteText(code: string): string {
+  const name = profile().name
+  return [
+    `✦ ${name ? name + '님이 ' : ''}미니미 광장으로 초대했어요!`,
+    `광장 코드: ${code}`,
+    '',
+    `👉 ${DOWNLOAD_PAGE}?join=${encodeURIComponent(code)}`,
+    '(앱이 없으면 링크에서 설치한 뒤, 앱에서 코드를 붙여넣으면 돼요)'
+  ].join('\n')
+}
+
+export function copyInvite(): void {
+  const code = app.get().room?.code
+  if (!code) return
+  void window.api.copyText(inviteText(code))
+  toast('초대 메시지를 복사했어요! 카톡에 붙여넣어 보내주세요 💌', 4000)
+}
+
+export function copyCode(): void {
+  const code = app.get().room?.code
+  if (!code) return
+  void window.api.copyText(code)
+  toast(`광장 코드 ${code} 를 복사했어요`)
+}
 
 export async function saveProfile(name: string, minimi: MinimiConfig): Promise<void> {
   const p = await window.api.setProfile({ name: name.trim().slice(0, 12), minimi })
@@ -225,7 +269,7 @@ export function joinRoom(code: string): void {
   app.set({ room: { code }, members: {}, chat: [], outCalls: {}, inCalls: {}, callPrompt: null, selected: null, view: 'plaza' })
   void window.api.addRecentRoom(code).then(setPersisted)
   void window.api.setLastRoom(code)
-  sys(`🌱 광장 ${code} 에 들어왔어요. 친구에게 코드를 알려주세요!`)
+  sys(`🌱 광장 ${code} 에 들어왔어요. 💌 초대하기로 친구를 불러보세요!`)
   updateTray()
 
   s.on('hello', onHello)

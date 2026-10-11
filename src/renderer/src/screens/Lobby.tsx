@@ -23,7 +23,7 @@ export function Lobby(): React.JSX.Element {
   const enter = (): void => {
     const c = normalizeRoomCode(code)
     if (!c) {
-      toast('코드 형식이 달라요 (예: STAR-4821)')
+      toast('코드를 찾지 못했어요 (예: STAR-QX7K-M2P9)')
       return
     }
     joinRoom(c)
@@ -69,14 +69,14 @@ export function Lobby(): React.JSX.Element {
         <section className="panel lobby-card">
           <div className="lobby-card-text">
             <h2>코드로 들어가기</h2>
-            <p className="muted">친구에게 받은 광장 코드를 입력하세요.</p>
+            <p className="muted">친구에게 받은 광장 코드나 초대 메시지를 붙여넣으세요.</p>
           </div>
           <div className="row">
             <input
               className="input code-input"
-              placeholder="STAR-4821"
+              placeholder="STAR-QX7K-M2P9"
               value={code}
-              maxLength={16}
+              maxLength={400}
               onChange={(e) => setCode(e.target.value.toUpperCase())}
               onKeyDown={(e) => e.key === 'Enter' && enter()}
             />

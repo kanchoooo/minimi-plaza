@@ -53,6 +53,8 @@
   font-weight: 400;
   color: var(--accent-ink);
   letter-spacing: 1px;
+  cursor: copy;
+  user-select: text;
 }
 .room-code.big {
   font-size: 20px;
@@ -171,7 +173,12 @@
   flex-direction: column;
   gap: 12px;
   min-height: 0;
-  overflow: auto;
+  max-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  /* 버튼 눌림(1px 내려감)·그림자 때문에 스크롤바가 생기지 않게 여유 */
+  padding: 2px 4px 8px;
+  margin: -2px -4px 0;
 }
 .lobby-card {
   display: flex;
@@ -196,7 +203,7 @@
   background: linear-gradient(120deg, #fff 55%, #fdf3d8);
 }
 .code-input {
-  width: 180px;
+  width: 210px;
   font-family: var(--font-big);
   letter-spacing: 1px;
   text-transform: uppercase;

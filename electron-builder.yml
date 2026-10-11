@@ -11,6 +11,10 @@ directories:
   output: dist
   buildResources: build
 electronLanguages: [ko, en]
+# 초대 링크로 앱 바로 열기: minimiplaza://join/코드
+protocols:
+  - name: Minimi Plaza Invite
+    schemes: [minimiplaza]
 files:
   - out/**
   - package.json

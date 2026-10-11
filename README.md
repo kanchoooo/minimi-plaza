@@ -45,7 +45,7 @@ npm start          # 빌드 결과 미리보기
 ## 배포
 
 저장소: https://github.com/kanchoooo/minimi-plaza (공개)
-다운로드 페이지: https://kanchoooo.github.io/minimi-plaza/ (`docs/index.html`, GitHub Pages)
+다운로드 페이지: https://easyticket.co.kr/apps/minimi-plaza/ (관제 관리자 세션이 운영 · `docs/index.html` 은 참고용 원본이자 GitHub Pages 예비 주소 https://kanchoooo.github.io/minimi-plaza/)
 
 고정 다운로드 주소 (버전이 바뀌어도 그대로 — 윈도우 SmartScreen 평판 유지):
 - 맥: `https://github.com/kanchoooo/minimi-plaza/releases/latest/download/MinimiPlaza-mac.dmg`

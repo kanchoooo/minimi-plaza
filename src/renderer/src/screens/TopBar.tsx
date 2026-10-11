@@ -1,4 +1,4 @@
-import { app, leaveRoom, openSettings, toast } from '@/state/app'
+import { app, copyCode, copyInvite, leaveRoom, openSettings } from '@/state/app'
 
 export function TopBar(): React.JSX.Element {
   const room = app.use((s) => s.room)
@@ -6,12 +6,6 @@ export function TopBar(): React.JSX.Element {
   const count = app.use((s) => Object.keys(s.members).length + 1)
   const dnd = app.use((s) => s.persisted.settings.dnd)
   const receive = app.use((s) => s.persisted.settings.receiveFireworks)
-
-  const copy = (): void => {
-    if (!room) return
-    void window.api.copyText(room.code)
-    toast(`광장 코드 ${room.code} 를 복사했어요`)
-  }
 
   return (
     <header className="topbar drag">
@@ -24,9 +18,11 @@ export function TopBar(): React.JSX.Element {
       {view === 'plaza' && room && (
         <div className="room-chip no-drag">
           <span className="faint">광장 코드</span>
-          <b className="room-code">{room.code}</b>
-          <button className="btn btn-sm" onClick={copy}>
-            복사
+          <b className="room-code" title="눌러서 코드만 복사" onClick={copyCode}>
+            {room.code}
+          </b>
+          <button className="btn btn-sm btn-primary" onClick={copyInvite} title="코드 + 다운로드 링크를 함께 복사">
+            💌 초대하기
           </button>
           <span className="chip">{count} / 6명</span>
         </div>

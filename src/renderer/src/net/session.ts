@@ -357,18 +357,42 @@ const CODE_WORDS = [
   'MANGO', 'LEMON', 'PIXEL', 'TOAST', 'COCOA', 'BUBBLE', 'MOCHI', 'TULIP', 'OCEAN', 'SUNNY'
 ]
 
-/** 예: STAR-4821 */
-export function makeRoomCode(): string {
-  const w = CODE_WORDS[Math.floor(Math.random() * CODE_WORDS.length)]
-  const n = String(Math.floor(1000 + Math.random() * 9000))
-  return `${w}-${n}`
+// 헷갈리는 글자(0/O, 1/I/L) 제외 — 31자
+const CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'
+
+function randomChars(n: number): string {
+  const buf = new Uint32Array(n)
+  crypto.getRandomValues(buf)
+  return Array.from(buf, (v) => CODE_CHARS[v % CODE_CHARS.length]).join('')
 }
 
-/** 입력한 코드를 정규화. 형식이 아니면 null */
+/**
+ * 광장 코드. 예: STAR-QX7K-M2P9
+ * 서버 없이 각자 만들기 때문에 겹치지 않을 만큼 길게: 20 × 31^8 ≈ 17조 가지
+ * (예전 형식 STAR-4821 도 normalizeRoomCode 로 계속 입장 가능)
+ */
+export function makeRoomCode(): string {
+  const w = CODE_WORDS[Math.floor(Math.random() * CODE_WORDS.length)]
+  return `${w}-${randomChars(4)}-${randomChars(4)}`
+}
+
+/**
+ * 입력한 코드를 정규화. 코드만 입력해도, 초대 메시지·링크를 통째로 붙여넣어도 찾아낸다.
+ * 형식이 아니면 null
+ */
 export function normalizeRoomCode(input: string): string | null {
-  const s = input.toUpperCase().replace(/\s+/g, '').replace(/_/g, '-')
-  const m = s.match(/^([A-Z]{2,10})-?(\d{3,6})$/)
-  return m ? `${m[1]}-${m[2]}` : null
+  const s = String(input).toUpperCase().trim().slice(0, 400)
+  // 1) 코드만 입력 (하이픈·공백은 있어도 없어도 됨)
+  const exact = s.match(/^([A-Z]{2,10})[-\s]*([A-Z0-9]{4})[-\s]*([A-Z0-9]{4})$/)
+  if (exact) return `${exact[1]}-${exact[2]}-${exact[3]}`
+  const oldExact = s.match(/^([A-Z]{2,10})[-\s]*(\d{3,6})$/)
+  if (oldExact) return `${oldExact[1]}-${oldExact[2]}`
+  // 2) 메시지·링크 안에서 찾기
+  const inText = s.match(/(?:^|[^A-Z0-9])([A-Z]{2,10})-([A-Z0-9]{4})-([A-Z0-9]{4})(?![A-Z0-9])/)
+  if (inText) return `${inText[1]}-${inText[2]}-${inText[3]}`
+  const oldInText = s.match(/(?:^|[^A-Z0-9])([A-Z]{2,10})-(\d{3,6})(?![A-Z0-9])/)
+  if (oldInText) return `${oldInText[1]}-${oldInText[2]}`
+  return null
 }
 
 export function newId(): string {

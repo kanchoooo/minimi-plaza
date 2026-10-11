@@ -26,7 +26,9 @@ const api: MainApi = {
   isWindowFocused: () => ipcRenderer.invoke('app:isFocused'),
   setTrayStatus: (s) => ipcRenderer.invoke('app:trayStatus', s),
   copyText: (text) => ipcRenderer.invoke('app:copy', text),
-  getVersion: () => ipcRenderer.invoke('app:version')
+  getVersion: () => ipcRenderer.invoke('app:version'),
+  takeJoinLink: () => ipcRenderer.invoke('app:takeJoinLink'),
+  onJoinLink: (cb) => on<string>('app:joinLink', cb)
 }
 
 contextBridge.exposeInMainWorld('api', api)

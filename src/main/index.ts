@@ -2,6 +2,7 @@ import { app, BrowserWindow, clipboard, ipcMain, Menu, Notification, shell, Tray
 import { readFileSync, mkdirSync, writeFileSync } from 'fs'
 import { join } from 'path'
 import type { FireworkShow, NotifyOptions, Profile, Settings, TrayStatus } from '@shared/types'
+import { APP_PROTOCOL } from '@shared/types'
 import { Store } from './store'
 import { OverlayManager } from './overlay'
 import { trayIcon } from './icons'
@@ -19,6 +20,28 @@ if (process.platform === 'win32') app.setAppUserModelId('com.minimiplaza.app')
 if (!devProfile && !isHeadless() && !app.requestSingleInstanceLock()) {
   app.quit()
 }
+
+// ───────── 초대 링크 (minimiplaza://join/코드) ─────────
+let pendingLink: string | null = null
+const findLink = (argv: string[]): string | null => argv.find((a) => a.startsWith(APP_PROTOCOL + '://')) ?? null
+
+function handleLink(url: string): void {
+  const link = String(url).slice(0, 300)
+  if (mainWin && !mainWin.isDestroyed() && !mainWin.webContents.isLoading()) {
+    showMain()
+    mainWin.webContents.send('app:joinLink', link)
+  } else {
+    pendingLink = link
+  }
+}
+
+// 맥: 링크로 열면 open-url (앱이 뜨기 전에도 올 수 있다)
+app.on('open-url', (e, url) => {
+  e.preventDefault()
+  handleLink(url)
+})
+// 윈도우: 처음 실행할 때 인자로 들어온다
+pendingLink = findLink(process.argv)
 
 let mainWin: BrowserWindow | null = null
 let tray: Tray | null = null
@@ -183,6 +206,11 @@ function registerIpc(): void {
   })
   ipcMain.handle('app:copy', (_e, text: string) => clipboard.writeText(String(text)))
   ipcMain.handle('app:version', () => app.getVersion())
+  ipcMain.handle('app:takeJoinLink', () => {
+    const l = pendingLink
+    pendingLink = null
+    return l
+  })
 }
 
 // ───────── 테스트 자동화 훅 (환경변수로만 동작) ─────────
@@ -245,9 +273,16 @@ function runAutomation(): void {
   }
 }
 
-app.on('second-instance', () => showMain())
+// 윈도우: 이미 켜져 있으면 두 번째 실행의 인자로 들어온다
+app.on('second-instance', (_e, argv) => {
+  showMain()
+  const link = findLink(argv)
+  if (link) handleLink(link)
+})
 
 app.whenReady().then(() => {
+  // 초대 링크로 앱이 열리도록 등록 (개발용 프로필 제외)
+  if (app.isPackaged && !devProfile) app.setAsDefaultProtocolClient(APP_PROTOCOL)
   store = new Store()
   overlay = new OverlayManager((id) => {
     mainWin?.webContents.send('fireworks:ended', id)

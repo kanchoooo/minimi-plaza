@@ -113,6 +113,9 @@ export interface MainApi {
   setTrayStatus(s: TrayStatus): Promise<void>
   copyText(text: string): Promise<void>
   getVersion(): Promise<string>
+  /** minimiplaza://join/코드 로 앱이 열렸을 때 (앱이 켜지기 전에 온 링크는 take 로 한 번 받음) */
+  takeJoinLink(): Promise<string | null>
+  onJoinLink(cb: (url: string) => void): () => void
 }
 
 /** 오버레이 preload 가 window.overlayApi 로 노출하는 API */
@@ -139,3 +142,8 @@ export const DEFAULT_SETTINGS: Settings = {
 }
 
 export const MAX_PLAZA = 6
+
+/** 다운로드 페이지 (초대 링크) */
+export const DOWNLOAD_PAGE = 'https://easyticket.co.kr/apps/minimi-plaza/'
+/** 앱 바로 열기 링크 스킴: minimiplaza://join/코드 */
+export const APP_PROTOCOL = 'minimiplaza'

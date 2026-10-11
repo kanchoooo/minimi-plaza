@@ -146,6 +146,58 @@
         font-size: 24px;
         margin-bottom: 4px;
       }
+.invite {
+        display: none;
+        margin-bottom: 16px;
+        padding: 18px 20px;
+        text-align: center;
+        background: linear-gradient(120deg, #fff 40%, #fff1e6);
+        border: 1px solid #ffc9a3;
+        border-radius: 14px;
+        box-shadow: 0 0 0 4px rgba(255, 127, 42, 0.12);
+      }
+      .invite.show {
+        display: block;
+      }
+      .invite-title {
+        font-weight: 800;
+        color: #b14d06;
+        font-size: 17px;
+      }
+      .invite-code {
+        margin: 10px 0 12px;
+        font: 800 28px/1.2 ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+        letter-spacing: 2px;
+        color: var(--accent);
+        user-select: all;
+      }
+      .invite-row {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .btn2 {
+        padding: 10px 16px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: #fff;
+        font: inherit;
+        font-weight: 700;
+        color: var(--text);
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .btn2.primary {
+        background: var(--sky);
+        border-color: #1f86c9;
+        color: #fff;
+      }
+      .invite-hint {
+        margin-top: 10px;
+        font-size: 13px;
+        color: var(--text-2);
+      }
       footer {
         text-align: center;
         color: var(--text-2);
@@ -165,6 +217,16 @@
         <div class="logo"><span>✦</span> 미니미 광장</div>
         <div class="tag">나만의 미니미를 만들고 친구들과 광장에 모여요.<br />불러도 대답 없는 친구에겐 화면 가득 불꽃놀이를 🎆</div>
       </header>
+
+      <div class="invite" id="invite">
+        <div class="invite-title">💌 친구가 미니미 광장에 초대했어요!</div>
+        <div class="invite-code" id="invite-code"></div>
+        <div class="invite-row">
+          <a class="btn2 primary" id="open-app" href="#">✦ 앱에서 바로 열기</a>
+          <button class="btn2" id="copy-code" type="button">코드 복사</button>
+        </div>
+        <div class="invite-hint">앱이 없다면 아래에서 먼저 설치하고, 앱의 <b>코드로 들어가기</b>에 코드를 붙여넣으세요.</div>
+      </div>
 
       <div class="card">
         <div class="tabs">
@@ -218,6 +280,23 @@
       }
       document.querySelectorAll('.tabs button').forEach((b) => b.addEventListener('click', () => select(b.dataset.os)))
       select(new URLSearchParams(location.search).get('os') || guess)
+
+      // 초대 링크: ?join=STAR-QX7K-M2P9
+      const join = (new URLSearchParams(location.search).get('join') || '').toUpperCase()
+      if (/^[A-Z]{2,10}-[A-Z0-9]{4}-[A-Z0-9]{4}$|^[A-Z]{2,10}-\d{3,6}$/.test(join)) {
+        document.getElementById('invite').classList.add('show')
+        document.getElementById('invite-code').textContent = join
+        document.getElementById('open-app').href = 'minimiplaza://join/' + join
+        document.getElementById('copy-code').addEventListener('click', async (e) => {
+          try {
+            await navigator.clipboard.writeText(join)
+            e.target.textContent = '복사했어요 ✓'
+          } catch {
+            e.target.textContent = '코드를 길게 눌러 복사하세요'
+          }
+        })
+        document.title = '미니미 광장 초대 — ' + join
+      }
     </script>
   </body>
 </html>

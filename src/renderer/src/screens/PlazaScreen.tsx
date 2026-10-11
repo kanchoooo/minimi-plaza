@@ -6,13 +6,14 @@ import {
   attachView,
   blockMember,
   callPeer,
+  copyCode,
+  copyInvite,
   detachView,
   fireworkAvailability,
   myMinimi,
   openComposer,
   selectMember,
   sendChat,
-  toast,
   unblock
 } from '@/state/app'
 import type { AppState, Member } from '@/state/app'
@@ -68,17 +69,16 @@ function AloneHint(): React.JSX.Element | null {
     <div className="alone-hint">
       <div className="alone-card">
         <div className="alone-title">아직 광장에 아무도 없어요</div>
-        <div className="muted">친구에게 광장 코드를 보내주세요</div>
+        <div className="muted">초대 메시지를 복사해서 친구에게 보내주세요 (코드 + 다운로드 링크)</div>
+        <div className="room-code big" style={{ marginTop: 6 }}>
+          {code}
+        </div>
         <div className="row" style={{ justifyContent: 'center', marginTop: 6 }}>
-          <b className="room-code big">{code}</b>
-          <button
-            className="btn btn-sm btn-primary"
-            onClick={() => {
-              void window.api.copyText(code)
-              toast('복사했어요! 친구에게 보내주세요')
-            }}
-          >
-            복사
+          <button className="btn btn-primary" onClick={copyInvite}>
+            💌 초대 메시지 복사
+          </button>
+          <button className="btn" onClick={copyCode}>
+            코드만 복사
           </button>
         </div>
         <div className="faint" style={{ marginTop: 6 }}>
