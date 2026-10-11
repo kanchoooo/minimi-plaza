@@ -31,6 +31,7 @@ sh(`npm version ${bump} -m "release v%s"`)
 const version = JSON.parse(readFileSync('package.json', 'utf8')).version
 const tag = `v${version}`
 sh('git push --follow-tags')
+// 초안을 먼저 하나 만들어 둔다 (맥·윈도우 업로드가 같은 초안을 쓰도록)
 sh(`gh release create ${tag} --draft --verify-tag --title "${tag}" --generate-notes`)
 
 // ── 2. 맥 빌드·서명·공증·업로드 ──
