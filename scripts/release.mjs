@@ -1,5 +1,5 @@
-// 새 버전 배포: npm run release              (0.1.0 → 0.1.1)
-//              npm run release -- minor     (0.1.0 → 0.2.0)
+// 새 버전 배포: npm run release              (0.0.2 → 0.0.3)
+//              npm run release -- minor     (0.0.2 → 0.1.0)
 //              npm run release -- current   (버전 그대로, 첫 배포·재시도용)
 //
 // 1) 버전 올리고 태그 push  → GitHub Actions 가 윈도우 설치파일을 만들어 초안 릴리스에 올림

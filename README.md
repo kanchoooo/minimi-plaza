@@ -54,8 +54,8 @@ npm start          # 빌드 결과 미리보기
 ### 새 버전 배포 (명령 한 줄)
 
 ```bash
-npm run release            # 0.1.0 → 0.1.1
-npm run release -- minor   # 0.1.0 → 0.2.0
+npm run release            # 0.0.2 → 0.0.3
+npm run release -- minor   # 0.0.2 → 0.1.0
 ```
 
 `scripts/release.mjs` 가 순서대로 처리합니다.
@@ -69,7 +69,9 @@ npm run release -- minor   # 0.1.0 → 0.2.0
 
 1. **Developer ID 인증서** — 완료 (Developer ID Application: KWANGJO KIM (GQJXPJX34S), 2031-09 만료)
    - 서명 파일: `~/.minimi-signing/DeveloperID_Application.p12` (+ 비밀번호 `p12-password`)
-   - 빌드할 때 electron-builder 가 임시 키체인에 넣어 서명하므로 키체인 "허용" 창이 뜨지 않습니다
+   - 빌드할 때 `scripts/build-mac.mjs` 가 임시 키체인(`~/.minimi-signing/build.keychain-db`)에 넣어 서명하므로 키체인 "허용" 창이 뜨지 않습니다
+   - 임시 키체인은 검색 목록 맨 뒤(로그인 키체인 뒤)에만 붙고, 빌드가 끝나면(실패·Ctrl+C·종료 신호 포함) 목록에서 빠지고 지워집니다. 강제 종료로 남았으면 다음 빌드가 먼저 치웁니다
+   - 서명 빌드는 한 번에 하나만 돕니다 (`~/.minimi-signing/.build.lock` — 다른 프로젝트의 서명 빌드와 같이 씀)
    - ⚠ 이 폴더는 **꼭 백업** (분실하면 인증서를 새로 만들어야 하고, 유출되면 남이 내 이름으로 서명 가능)
 2. **앱 암호**: https://account.apple.com → 로그인 및 보안 → 앱 암호 → 생성 (이름 예: minimi-notary)
 3. **공증 정보를 키체인에 저장** (맥 터미널에서, 앱 암호는 입력해도 화면에 안 보임):
