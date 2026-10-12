@@ -67,7 +67,7 @@ npm run release -- minor   # 0.0.2 → 0.1.0
 
 ### 맥 서명·공증 준비 (한 번만)
 
-1. **Developer ID 인증서** — 완료 (Developer ID Application: KWANGJO KIM (GQJXPJX34S), 2031-09 만료)
+1. **Developer ID 인증서** — 완료 (Developer ID Application, 2031-09 만료)
    - 서명 파일: `~/.minimi-signing/DeveloperID_Application.p12` (+ 비밀번호 `p12-password`)
    - 빌드할 때 `scripts/build-mac.mjs` 가 임시 키체인(`~/.minimi-signing/build.keychain-db`)에 넣어 서명하므로 키체인 "허용" 창이 뜨지 않습니다
    - 임시 키체인은 검색 목록 맨 뒤(로그인 키체인 뒤)에만 붙고, 빌드가 끝나면(실패·Ctrl+C·종료 신호 포함) 목록에서 빠지고 지워집니다. 강제 종료로 남았으면 다음 빌드가 먼저 치웁니다
@@ -76,7 +76,8 @@ npm run release -- minor   # 0.0.2 → 0.1.0
 2. **앱 암호**: https://account.apple.com → 로그인 및 보안 → 앱 암호 → 생성 (이름 예: minimi-notary)
 3. **공증 정보를 키체인에 저장** (맥 터미널에서, 앱 암호는 입력해도 화면에 안 보임):
    ```bash
-   xcrun notarytool store-credentials minimi-notary --apple-id "<애플 계정 이메일>" --team-id GQJXPJX34S
+   xcrun notarytool store-credentials minimi-notary --apple-id "<애플 계정 이메일>" --team-id <팀 ID>
+   # 팀 ID: developer.apple.com → Account → Membership details
    ```
 
 확인용 빌드만 하려면 `npm run dist:mac` (서명 + 공증, 업로드 없음 — 공증 프로필이 없으면 서명만) / `npm run dist:mac:local` (서명 없이 내 맥용 .app).

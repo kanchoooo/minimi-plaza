@@ -37,7 +37,6 @@ try {
 if (!notarize && publish) throw new Error(`공증 프로필 "${profile}" 이 없어요. 배포 전에 공증 설정이 필요해요.`)
 if (!notarize) console.warn(`⚠ 공증 프로필 "${profile}" 이 없어 서명만 하고 공증은 건너뜁니다.`)
 
-const IDENTITY = 'KWANGJO KIM (GQJXPJX34S)'
 const keychain = join(dir, 'build.keychain-db')
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 const security = (...args) => execFileSync('/usr/bin/security', args, { encoding: 'utf8' })
@@ -203,6 +202,10 @@ security('set-keychain-settings', keychain)
 security('unlock-keychain', '-p', kcPass, keychain)
 security('import', p12, '-k', keychain, '-P', readFileSync(pwFile, 'utf8').trim(), '-T', '/usr/bin/codesign', '-T', '/usr/bin/productbuild')
 security('set-key-partition-list', '-S', 'apple-tool:,apple:,codesign:', '-s', '-k', kcPass, keychain)
+// 서명 인증서 이름은 p12 에서 읽는다 (저장소에 이름·팀 ID 를 적지 않으려고)
+const found = security('find-identity', '-p', 'codesigning', keychain).match(/"Developer ID Application: ([^"]+)"/)
+if (!found) throw new Error('p12 안에 Developer ID Application 인증서가 없어요')
+const IDENTITY = found[1]
 // electron-builder 가 서명 인증서를 검색 목록에서 찾으므로 넣되, 맨 뒤(로그인 키체인 뒤)에 붙인다
 setUserKeychains([...userKeychains().filter((k) => k !== keychain), keychain])
 
